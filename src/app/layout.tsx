@@ -1,6 +1,6 @@
 export const metadata = {
   title: "Ceramic demo",
-  description: "Generate your DID using a seed",
+  description: "Generate your DID using a seed.",
 };
 
 export default function RootLayout({

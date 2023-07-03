@@ -1,95 +1,128 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+"use client";
+
+import { useCallback, useState } from "react";
+
+// UI & Styling
+import {
+  Box,
+  Button,
+  Card,
+  Heading,
+  IconButton,
+  Text,
+  Textarea,
+} from "@chakra-ui/react";
+import { atomOneDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import SyntaxHighlighter from "react-syntax-highlighter";
+import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { Providers } from "@/components/Providers";
+
+// Ceramic imports
+import { getSeed } from "@/utils/getSeed";
+import { connect3ID } from "@/utils/connect";
+import { useAccount } from "wagmi";
 
 export default function Home() {
+  // Wallet
+  const { connector, address, isConnected } = useAccount();
+  // Ceramic
+  const [seed, setSeed] = useState(
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  );
+  const [did, setDid] = useState<{ [key: string]: any } | undefined>({});
+  // UI
+  const [isGenerateSeedVisible, setIsGenerateSeedVisible] = useState(false);
+
+  const generateSeed = useCallback(async () => {
+    const provider = await connector?.getProvider();
+    if (address && provider) {
+      const seed = await getSeed(address, provider);
+      setSeed(seed);
+    }
+  }, [connector, address]);
+
+  const generateDid = async (seed: string) => {
+    const summary = await connect3ID(seed);
+    setDid(summary);
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <Providers>
+      <Box width={780} mr="auto" ml="auto" mt={5}>
+        <Heading mb={5}>Did Generator</Heading>
+        <Text>
+          This tool helps you to first enter, or generate, a seed, before using
+          it to create a DID using tools provided by Ceramic.
+        </Text>
+
+        <Card variant={"elevated"} p={5} my={5}>
+          <Box
+            display="flex"
+            justifyContent={"space-between"}
+            mb={isGenerateSeedVisible ? 3 : 0}
           >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
+            <Heading size="md" alignItems={"center"}>
+              Generate seed using wallet{" "}
+              <span style={{ opacity: 0.5 }}>(Optional)</span>
+            </Heading>
+            <IconButton
+              aria-label="open/close generate seed panel"
+              onClick={() => setIsGenerateSeedVisible(!isGenerateSeedVisible)}
+              icon={
+                isGenerateSeedVisible ? <ChevronUpIcon /> : <ChevronDownIcon />
+              }
+            ></IconButton>
+          </Box>
+          {isGenerateSeedVisible && (
+            <>
+              <Text>Sign a message to generate a seed using your wallet.</Text>
+              <Text>Using the same seed should generate the same DID.</Text>
+              <Box display="flex" mt={5}>
+                <ConnectButton />
+                <Button
+                  ml={3}
+                  colorScheme="orange"
+                  onClick={generateSeed}
+                  disabled={!isConnected}
+                >
+                  {!isConnected
+                    ? "Connect wallet to generate seed"
+                    : "Generate seed"}
+                </Button>
+              </Box>
+            </>
+          )}
+        </Card>
+
+        <Card variant={"elevated"} p={5} my={5}>
+          <Heading size="md" alignItems={"center"} mb={3}>
+            Generate DID using seed
+          </Heading>
+          <Box display={"flex"} mb={3}>
+            <Textarea
+              value={seed}
+              onChange={(e) => setSeed(e.target.value)}
+              mr={3}
             />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+            <Button
+              colorScheme="orange"
+              onClick={() => generateDid(seed)}
+              mb={3}
+            >
+              Generate did
+            </Button>
+          </Box>
+          <Text my={3}>The same seed should output the same DID.</Text>
+          <SyntaxHighlighter
+            language="javascript"
+            style={atomOneDark}
+            customStyle={{ fontSize: "14px", borderRadius: "8px" }}
+          >
+            {did ? JSON.stringify(did, null, 4) : "Did not generated"}
+          </SyntaxHighlighter>
+        </Card>
+      </Box>
+    </Providers>
+  );
 }

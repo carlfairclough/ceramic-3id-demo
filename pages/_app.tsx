@@ -2,19 +2,11 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import type { AppProps } from "next/app";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import {
-  arbitrum,
-  goerli,
-  mainnet,
-  optimism,
-  polygon,
-  zora,
-} from "wagmi/chains";
+import { mainnet, optimism } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import { useEffect } from "react";
 
-import { Chain } from "wagmi";
-// const c: Chain = 'eip155:1'
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [mainnet, optimism],
   [publicProvider()]
@@ -32,26 +24,30 @@ const wagmiConfig = createConfig({
   publicClient,
   webSocketPublicClient,
 });
-
 const theme = extendTheme({
   styles: {
-    global: () => ({
+    global: {
       body: {
         bg: "#f2f2f2",
       },
-    }),
+    },
   },
 });
 
 function MyApp({ Component, pageProps }: AppProps) {
+  useEffect(() => {
+    // Perform localStorage action
+
+    localStorage.setItem("chakra-ui-color-mode", "light");
+  }, []);
   return (
-    <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains}>
-        <ChakraProvider theme={theme}>
+    <ChakraProvider theme={theme}>
+      <WagmiConfig config={wagmiConfig}>
+        <RainbowKitProvider chains={chains}>
           <Component {...pageProps} />
-        </ChakraProvider>
-      </RainbowKitProvider>
-    </WagmiConfig>
+        </RainbowKitProvider>
+      </WagmiConfig>
+    </ChakraProvider>
   );
 }
 

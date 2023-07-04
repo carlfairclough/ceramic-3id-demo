@@ -5463,7 +5463,7 @@ near-api-js@^0.44.2:
     text-encoding-utf-8 "^1.0.2"
     tweetnacl "^1.0.1"
 
-next@13.4.8:
+next@^13.4.3:
   version "13.4.8"
   resolved "https://registry.yarnpkg.com/next/-/next-13.4.8.tgz#72245bf4fdf328970147ee30de97142c39b1cb3f"
   integrity sha512-lxUjndYKjZHGK3CWeN2RI+/6ni6EUvjiqGWXAYPxUfGIdFGQ5XoisrqAJ/dF74aP27buAfs8MKIbIMMdxjqSBg==
@@ -5936,7 +5936,7 @@ react-clientside-effect@^1.2.6:
   dependencies:
     "@babel/runtime" "^7.12.13"
 
-react-dom@18.2.0:
+react-dom@^18.2.0:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-18.2.0.tgz#22aaf38708db2674ed9ada224ca4aa708d821e3d"
   integrity sha512-6IMTriUmvsjHUjNtEDudZfuDQUoWXVxKHhlEGSk81n4YFS+r/Kl99wXiwlVXtPBtJenozv2P+hxDsw9eA7Xo6g==
@@ -6016,7 +6016,7 @@ react-syntax-highlighter@^15.5.0:
     prismjs "^1.27.0"
     refractor "^3.6.0"
 
-react@18.2.0:
+react@^18.2.0:
   version "18.2.0"
   resolved "https://registry.yarnpkg.com/react/-/react-18.2.0.tgz#555bd98592883255fa00de14f1151a917b5d77d5"
   integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==
@@ -6765,7 +6765,7 @@ varuint-bitcoin@^1.1.2:
   dependencies:
     safe-buffer "^5.1.1"
 
-viem@^1.0.0, viem@^1.2.9:
+viem@^1.0.0:
   version "1.2.9"
   resolved "https://registry.yarnpkg.com/viem/-/viem-1.2.9.tgz#8ccf786cd00d28b14b644f2b9fe35fc6bf2bdc41"
   integrity sha512-EnEbTuAAHv43unUgMISdQXbD9mrhZLvOdmf6eRGbDFl+XwP/PEzZAT79RaWAuDPnLXGMP1gBCJF++NFjSMukUw==
@@ -6780,10 +6780,25 @@ viem@^1.0.0, viem@^1.2.9:
     isomorphic-ws "5.0.0"
     ws "8.12.0"
 
-wagmi@^1.3.4:
-  version "1.3.4"
-  resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-1.3.4.tgz#1c2310a7bb3f30a92dfa85509351b440bfd8929a"
-  integrity sha512-PY+8coQDfQsXiJZq8KGYTzVRe708bMn7OFrbGq2NhykahkfsIB0QtEGDtpoa3Kvkt4RO68ClRSmH6vmt1ZqYSA==
+viem@~1.1.8:
+  version "1.1.8"
+  resolved "https://registry.yarnpkg.com/viem/-/viem-1.1.8.tgz#af5f8e2d3339be1db36405f3c0f15f5243658ce9"
+  integrity sha512-sMIbBu/rKI4paCWvCxpDNAT7vO9nCtu9SKXdVk5lwMVRL/HmMFCiIBtvRO0IiqlrvZTFCWnPEMn7ndNRyb+NCQ==
+  dependencies:
+    "@adraffy/ens-normalize" "1.9.0"
+    "@noble/curves" "1.0.0"
+    "@noble/hashes" "1.3.0"
+    "@scure/bip32" "1.3.0"
+    "@scure/bip39" "1.2.0"
+    "@wagmi/chains" "1.2.0"
+    abitype "0.8.7"
+    isomorphic-ws "5.0.0"
+    ws "8.12.0"
+
+wagmi@~1.3.2:
+  version "1.3.5"
+  resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-1.3.5.tgz#82bb4f4b405d5c0385ffc06aadb68fdb6c57821b"
+  integrity sha512-RDFjGg2MYX6CQcrppLY+KBZSDi/iYwA5zWOWQU7/qNeb/R6mBjUdhqE+aGV02K/nZw7AL8HqEoye6vNwaTQNJA==
   dependencies:
     "@tanstack/query-sync-storage-persister" "^4.27.1"
     "@tanstack/react-query" "^4.28.0"

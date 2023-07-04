@@ -15,7 +15,7 @@ import {
 import { atomOneDark } from "react-syntax-highlighter/dist/cjs/styles/hljs";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 
 // Ceramic imports
 import { getSeed } from "../utils/getSeed";
@@ -34,6 +34,8 @@ const Home: NextPage = () => {
   const [did, setDid] = useState<{ [key: string]: any } | undefined>({});
   // UI
   const [isGenerateSeedVisible, setIsGenerateSeedVisible] = useState(false);
+
+  const { openConnectModal } = useConnectModal();
 
   const generateSeed = useCallback(async () => {
     const provider = await connector?.getProvider();
@@ -55,11 +57,11 @@ const Home: NextPage = () => {
         <link href="/favicon.ico" rel="icon" />
       </Head>
       <Box p={5}>
-      <Heading mb={5}>Did Generator</Heading>
-      <Text>
-        This tool helps you to first enter, or generate, a seed, before using it
-        to create a DID using tools provided by Ceramic.
-      </Text>
+        <Heading mb={5}>Did Generator</Heading>
+        <Text>
+          This tool helps you to first enter, or generate, a seed, before using
+          it to create a DID using tools provided by Ceramic.
+        </Text>
       </Box>
 
       <Card variant={"elevated"} p={5} my={5}>
@@ -89,13 +91,13 @@ const Home: NextPage = () => {
               mt={5}
               flexDirection={{ base: "column", md: "row" }}
             >
-              <ConnectButton />
+              {isConnected && <ConnectButton />}
               <Button
-                ml={{ base: 0, md: 3 }}
-                mt={{ base: 3, md: 0 }}
+                ml={{ base: 0, md: isConnected ? 3 : 0 }}
+                mt={{ base: isConnected ? 3 : 0, md: 0 }}
                 minWidth={"max-content"}
-                colorScheme="orange"
-                onClick={generateSeed}
+                colorScheme={"orange"}
+                onClick={isConnected ? generateSeed : openConnectModal}
                 disabled={!isConnected}
               >
                 {!isConnected

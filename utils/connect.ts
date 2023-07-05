@@ -16,11 +16,17 @@ export const connect3ID = async (
   const _seed: Uint8Array = fromHex(seed);
   const ceramic = new CeramicClient(process.env.NEXT_PUBLIC_CERAMIC_ENDPOINT);
 
-  const opts = {
-    authId: authId ? authId : undefined,
-    authSecret: authId ? _seed : undefined,
-    seed: !authId ? _seed : undefined,
-  };
+  let opts
+  if (authId) {
+    opts = {
+      authId: authId,
+      authSecret: _seed,
+    }
+  } else {
+    opts = {
+      seed: _seed,
+    }
+  }
 
   try {
     const threeID = await ThreeIdProvider.create({

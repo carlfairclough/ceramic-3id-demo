@@ -2,51 +2,68 @@ import { fromHex } from "@3id/common";
 import { ThreeIdProvider } from "@3id/did-provider";
 import { CeramicClient } from "@ceramicnetwork/http-client";
 import { DID } from "dids";
-
 import { getResolver as get3IDResolver } from "@ceramicnetwork/3id-did-resolver";
 
-export const connect3ID = async (seed: string) => {
+export const connect3ID = async (
+  seed: string,
+  authId?: string
+) => {
   // First clear all local permissions so accounts can switch
   Object.keys(localStorage)
     .filter((x) => x.startsWith("3id_permission_"))
     .forEach((x) => localStorage.removeItem(x));
 
-  const _seed = fromHex(seed);
+  const _seed: Uint8Array = fromHex(seed);
   const ceramic = new CeramicClient(process.env.NEXT_PUBLIC_CERAMIC_ENDPOINT);
 
-  const threeID = await ThreeIdProvider.create({
-    //@ts-ignore // expects CeramicApi. Why?
-    ceramic: ceramic,
-    seed: _seed,
-    getPermission: (request: any) => Promise.resolve(request.payload.paths),
-  });
-
-  //@ts-ignore // expects CeramicApi. Why?
-  const resolver = get3IDResolver(ceramic);
-
-  const did = new DID({
-    //@ts-ignore // DidProvider is not assignable to type DIDProvider. Why?
-    provider: threeID.getDidProvider(),
-    //@ts-ignore // Mismatched types. Expects ResolverRegistry. Why?
-    resolver: resolver,
-  });
-
-  let authenticated = false;
+  const opts = {
+    authId: authId ? authId : undefined,
+    authSecret: authId ? _seed : undefined,
+    seed: !authId ? _seed : undefined,
+  };
 
   try {
-    await did.authenticate();
-    authenticated = true;
+    const threeID = await ThreeIdProvider.create({
+      ...opts,
+      //@ts-ignore // expects CeramicApi. Why?
+      ceramic: ceramic,
+      getPermission: (request: any) => Promise.resolve(request.payload.paths),
+    });
+
+    //@ts-ignore // expects CeramicApi. Why?
+    const resolver = get3IDResolver(ceramic);
+
+    const did = new DID({
+      //@ts-ignore // DidProvider is not assignable to type DIDProvider. Why?
+      provider: threeID.getDidProvider(),
+      //@ts-ignore // Mismatched types. Expects ResolverRegistry. Why?
+      resolver: resolver,
+    });
+
+    let authenticated = false;
+
+    try {
+      await did.authenticate();
+      authenticated = true;
+    } catch (err) {
+      console.error(`Failed to authenticate ${did.id}`, err);
+    }
+
+    ceramic.setDID(did);
+
+    return {
+      // didProvider: did,
+      did: did.id,
+      seedString: seed,
+      ...opts,
+    };
   } catch (err) {
-    console.error(`Failed to authenticate ${did.id}`, err);
+    console.error(err)
+    return {
+      error: 'Failed to create DID',
+      did: "Failed",
+      seedString: seed,
+      ...opts,
+    };
   }
-
-  ceramic.setDID(did);
-
-  return {
-    // didProvider: did,
-    did: did.id,
-    authenticated,
-    seed: seed,
-    uint8seed: _seed,
-  };
 };

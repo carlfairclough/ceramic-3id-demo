@@ -7,8 +7,10 @@ import {
   Box,
   Button,
   Card,
+  FormLabel,
   Heading,
   IconButton,
+  Input,
   Text,
   Textarea,
 } from "@chakra-ui/react";
@@ -34,6 +36,7 @@ const Home: NextPage = () => {
   const [did, setDid] = useState<{ [key: string]: any } | undefined>({});
   // UI
   const [isGenerateSeedVisible, setIsGenerateSeedVisible] = useState(false);
+  const [authId, setAuthId] = useState<string | undefined>();
 
   const { openConnectModal } = useConnectModal();
 
@@ -45,8 +48,8 @@ const Home: NextPage = () => {
     }
   }, [connector, address]);
 
-  const generateDid = async (seed: string) => {
-    const summary = await connect3ID(seed);
+  const generateDid = async (seed: string, authId?: string) => {
+    const summary = await connect3ID(seed, authId);
     setDid(summary);
   };
 
@@ -113,22 +116,31 @@ const Home: NextPage = () => {
         <Heading size="md" alignItems={"center"} mb={3}>
           Generate DID using seed
         </Heading>
-        <Box
-          display={"flex"}
-          mb={3}
-          flexDirection={{ base: "column", md: "row" }}
-        >
+        <Box mb={3}>
+          <FormLabel width="full" mt={2}>
+            Your seed. Will be used as AuthSecret if AuthId is provided.
+          </FormLabel>
           <Textarea
             fontFamily={"SFMono-Regular,Menlo,Monaco,Consolas,monospace"}
             fontSize={14}
+            width="full"
             value={seed}
             onChange={(e) => setSeed(e.target.value)}
           />
+          <FormLabel width="full" mt={2}>
+            Optional: use AuthId
+          </FormLabel>
+          <Input
+            fontFamily={"SFMono-Regular,Menlo,Monaco,Consolas,monospace"}
+            fontSize={14}
+            value={authId}
+            width="full"
+            onChange={(e) => setAuthId(e.target.value)}
+          />
           <Button
             colorScheme="orange"
-            onClick={() => generateDid(seed)}
-            ml={{ base: 0, md: 3 }}
-            mt={{ base: 3, md: 0 }}
+            onClick={() => generateDid(seed, authId ? authId : undefined)}
+            mt={3 }
             mb={3}
           >
             Generate did

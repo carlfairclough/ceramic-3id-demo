@@ -36,7 +36,7 @@ const Home: NextPage = () => {
   const [did, setDid] = useState<{ [key: string]: any } | undefined>({});
   // UI
   const [isGenerateSeedVisible, setIsGenerateSeedVisible] = useState(false);
-  const [authId, setAuthId] = useState<string | undefined>();
+  const [authId, setAuthId] = useState<string>('');
 
   const { openConnectModal } = useConnectModal();
 
@@ -45,6 +45,7 @@ const Home: NextPage = () => {
     if (address && provider) {
       const seed = await getSeed(address, provider);
       setSeed(seed);
+      setAuthId(address)
     }
   }, [connector, address]);
 

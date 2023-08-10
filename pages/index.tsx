@@ -48,8 +48,10 @@ const Home: NextPage = () => {
 
   const generateDid = useCallback(async () => {
     if (seed && address) {
+      setIsLoading(true)
       const summary = await connect3ID(seed, address);
       setDid(summary);
+      setIsLoading(false)
     }
   }, [address, seed]);
 
@@ -65,6 +67,8 @@ const Home: NextPage = () => {
   const [buttonProps, setButtonProps] = useState<ButtonProps>(defaultProps);
 
   const [button1Props, setButton1Props] = useState<ButtonProps>(defaultProps);
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const enabled = !!seed && !!address;
@@ -151,7 +155,7 @@ const Home: NextPage = () => {
           />
 
           <Button {...buttonProps} onClick={generateDid} mt={3} mb={3}>
-            Generate did
+            {isLoading ? "Loading" : "Generate did"}
           </Button>
         </Box>
         <Text my={3}>The same seed should output the same DID.</Text>
@@ -160,7 +164,11 @@ const Home: NextPage = () => {
           style={atomOneDark}
           customStyle={{ fontSize: "14px", borderRadius: "8px" }}
         >
-          {did ? JSON.stringify(did, null, 4) : "Did not generated"}
+          {isLoading
+            ? "Loading..."
+            : did
+            ? JSON.stringify(did, null, 4)
+            : "Did not generated"}
         </SyntaxHighlighter>
       </Card>
     </Box>
